@@ -11,7 +11,7 @@
  * Power:                     *
  *      Primary               *
  *      Power "^" Primary     *
- * 			Power "V" Primary     *
+ * 			Power "√" Primary     *
  * Primary:                   *
  *      Number                *
  *      "(" Expression ")"    *
@@ -28,34 +28,32 @@ function Expression(expression) {
 	expression = expression.replace(/\s/g, '');
 	this.expression = expression;
 	this.terms = parse(expression, '+', '-');
-	console.log('TERMS');
-	console.table(this.terms);
 	this.parsedTerms = this.terms.map(term => new Term(term));
+	console.log('EXPRESSION');
+	this.value = computeValue(expression, this.terms, this.parsedTerms);
 }
 
 function Term(term) {
 	this.term = term;
 	this.powers = parse(term, '*', '/', '%');
-	console.log('POWERS');
-	console.table(this.powers);
 	this.parsedPowers = this.powers.map(power => new Power(power));
+	console.log('TERM');
+	this.value = computeValue(term, this.powers, this.parsedPowers);
 }
 
 function Power(power) {
 	this.power = power;
 	this.primaries = parse(power, '^', '√');
-	console.log('PRIMARIES');
-	console.table(this.primaries);
 	this.parsedPrimaries = this.primaries.map(primary => new Primary(primary));
+	console.log('POWER');
+	this.value = computeValue(power, this.primaries, this.parsedPrimaries);
 }
 
 function Primary(primary) {
 	this.primary = primary;
 	this.value = isWrapped(primary, primary[1])
-		? new Expression(primary.slice(1, primary.length - 1))
+		? new Expression(primary.slice(1, primary.length - 1)).value
 		: primary;
-	console.log('VALUE');
-	console.table(this.value);
 }
 
 function parse(str, ...separators) {
@@ -73,6 +71,40 @@ function parse(str, ...separators) {
 	}
 	res.push(str);
 	return res;
+}
+
+function computeValue(str, parsedStr, members) {
+	let res = +members[0].value;
+	for (let i = 1; i < parsedStr.length; i++) {
+		console.log(
+			`${res} ${str[str.indexOf(parsedStr[i]) - 1]} ${
+				members[i].value
+			} = ${compute(
+				res,
+				+members[i].value,
+				str[str.indexOf(parsedStr[i]) - 1]
+			)}`
+		);
+		res = compute(res, +members[i].value, str[str.indexOf(parsedStr[i]) - 1]);
+	}
+	return res;
+}
+
+function compute(a, b, operator) {
+	switch (operator) {
+		case '+':
+			return a + b;
+		case '-':
+			return a - b;
+		case '*':
+			return a * b;
+		case '/':
+			return a / b;
+		case '%':
+			return a % b;
+		case '^':
+			return a ** b;
+	}
 }
 
 // returns true if the index is wrapped between a pair of two matching parenthesis
@@ -113,6 +145,7 @@ function matchingBracket(bracket) {
 	}
 }
 
-const expression = new Expression('1 ^ 6 + 2 * 3 ^ 5 + (4 + 2 + (2-3-6))');
+const expression = new Expression('3 * 4 ^ 3 - (2 * 9 - 1)');
+console.log(`the result is ${expression.value}`);
 // console.table(expression);
 // expression.parsedTerms.forEach(term => console.table(term));
