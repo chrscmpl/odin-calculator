@@ -26,30 +26,46 @@
 
 function Expression(expression) {
 	expression = expression.replace(/\s/g, '');
-	this.str = expression;
+	this.expression = expression;
 	this.terms = parse(expression, '+', '-');
+	console.log('TERMS');
+	console.table(this.terms);
 	this.parsedTerms = this.terms.map(term => new Term(term));
 }
 
 function Term(term) {
 	this.term = term;
-	this.powers = parse(term, '^', 'V');
-	// this.parsedPowers = this.powers.map(power => new Power(power));
+	this.powers = parse(term, '*', '/', '%');
+	console.log('POWERS');
+	console.table(this.powers);
+	this.parsedPowers = this.powers.map(power => new Power(power));
 }
 
-// function Power(power) {
-// 	this.power = power;
-// 	this.primaries = parse()
-// }
+function Power(power) {
+	this.power = power;
+	this.primaries = parse(power, '^', '√');
+	console.log('PRIMARIES');
+	console.table(this.primaries);
+	this.parsedPrimaries = this.primaries.map(primary => new Primary(primary));
+}
+
+function Primary(primary) {
+	this.primary = primary;
+	this.value = isWrapped(primary, primary[1])
+		? new Expression(primary.slice(1, primary.length - 1))
+		: primary;
+	console.log('VALUE');
+	console.table(this.value);
+}
 
 function parse(str, ...separators) {
 	let res = [];
 	for (let i = 0; i < str.length; i++) {
-		// for every separator in the expression that is not
+		// for every separator in the string that is not
 		//wrapped between parenthesis
 		if (separators.some(sep => sep === str[i]) && !isWrapped(str, i)) {
 			//append the term before the separator to
-			//the result and remove it from the expression
+			//the result and remove it from the string
 			res.push(str.slice(0, i));
 			str = str.slice(i + 1);
 			i = 0;
@@ -98,5 +114,5 @@ function matchingBracket(bracket) {
 }
 
 const expression = new Expression('1 ^ 6 + 2 * 3 ^ 5 + (4 + 2 + (2-3-6))');
-console.log(expression);
-expression.parsedTerms.forEach(term => console.log(term));
+// console.table(expression);
+// expression.parsedTerms.forEach(term => console.table(term));
