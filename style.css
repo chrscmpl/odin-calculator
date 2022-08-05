@@ -1,0 +1,79 @@
+body {
+	height: 100vh;
+	margin: 0;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#homepage {
+	height: 100%;
+	width: 100%;
+	background: radial-gradient(rgb(211, 255, 240) 60%, rgb(185, 255, 234));
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#calculator {
+	height: 85%;
+	width: 35%;
+	background-color: dimgray;
+	border: 5px solid black;
+	border-radius: 5%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#screen {
+	margin-top: 15%;
+	height: 13%;
+	width: 80%;
+	background-color: aquamarine;
+	border: 5px solid rgb(44, 44, 44);
+	border-radius: 10%;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-end;
+	font-size: 70px;
+}
+
+#screen-content {
+	font-size: 70px;
+	margin-right: 3%;
+}
+
+#buttons {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+#numerics {
+	margin-left: 5%;
+	height: 80%;
+	width: 60%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	row-gap: 10px;
+	gap: 10px;
+}
+
+#numerics > div {
+	flex: auto;
+	box-sizing: border-box;
+	background-color: pink;
+	border: 5px solid rgb(44, 44, 44);
+	height: 23%;
+	width: 30%;
+	font-size: 70px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+}

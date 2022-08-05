@@ -90,13 +90,13 @@ function parse(str, ...operators) {
 function computeResult(members) {
 	let res = members[0].result;
 	for (let i = 1; i < members.length - 1; i += 2) {
-		console.log(
-			`${res} ${members[i]} ${members[i + 1].result} = ${compute(
-				res,
-				members[i + 1].result,
-				members[i]
-			)}`
-		);
+		// console.log(
+		// 	`${res} ${members[i]} ${members[i + 1].result} = ${compute(
+		// 		res,
+		// 		members[i + 1].result,
+		// 		members[i]
+		// 	)}`
+		// );
 		res = compute(res, members[i + 1].result, members[i]);
 	}
 	return res;
@@ -166,6 +166,3 @@ function matchingBracket(bracket) {
 			return '|';
 	}
 }
-
-const expression = new Expression('(4 * -(9*-1)/-9)^3-(8*(+2-4)+ 16)^2');
-console.log(`the result is ${expression.result}`);
