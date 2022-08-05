@@ -51,17 +51,30 @@ function Power(power) {
 }
 
 function Primary(primary) {
-	let negative = false;
-	if (primary[0] === '-') negative = true;
-	if (primary[0] === '-' || primary[0] === '+') {
-		primary = primary.slice(1);
+	// If the primary is followed by a factorial symbol
+	// calculate the result as normal and calculate the
+	// factorial from that after
+	if (primary[primary.length - 1] === '!') {
+		this.result = new Primary(primary.slice(0, primary.length - 1)).result;
+		this.result = factorial(this.result);
 	}
-	this.result = isWrapped(primary, 1)
-		? new Expression(primary.slice(1, primary.length - 1)).result
-		: +primary;
-	if (primary[0] === '|')
-		this.result = this.result > 0 ? this.result : -this.result;
-	if (negative) this.result = -this.result;
+	// Else if the primary is preceded by a sign ignore it and change
+	// the sign of the result after calculating if it is a -
+	else if (primary[0] === '+' || primary[0] === '-') {
+		this.result = new Primary(primary.slice(1)).result;
+		if (primary[0] === '-') this.result = -this.result;
+	}
+	// Else calculate as normal, primaries wrapped inside parenthesis
+	// are to be calculated as expressions
+	else {
+		this.result = isWrapped(primary, 1)
+			? new Expression(primary.slice(1, primary.length - 1)).result
+			: +primary;
+		// If the parenthesis the primary was wrapped between are
+		// absolute symbols return the absolute value
+		if (primary[0] === '|')
+			this.result = this.result > 0 ? this.result : -this.result;
+	}
 }
 
 function parse(str, ...operators) {
@@ -154,6 +167,12 @@ function isOperator(char) {
 	return operators.some(op => op === char);
 }
 
+function factorial(n) {
+	if (n < 0) return NaN;
+	else if (n < 2) return 1;
+	else return factorial(n - 1) * n;
+}
+
 function matchingBracket(bracket) {
 	switch (bracket) {
 		case '(':
@@ -166,3 +185,5 @@ function matchingBracket(bracket) {
 			return '|';
 	}
 }
+
+console.log(new Expression('---24 - 4!').result);
