@@ -52,21 +52,32 @@ function Power(power) {
 }
 
 function Primary(primary) {
-	this.result = isWrapped(primary, primary[1])
+	let negative = false;
+	if (primary[0] === '-') negative = true;
+	if (primary[0] === '-' || primary[0] === '+') {
+		primary = primary.slice(1);
+	}
+	this.result = isWrapped(primary, 1)
 		? new Expression(primary.slice(1, primary.length - 1)).result
 		: +primary;
 	if (primary[0] === '|')
 		this.result = this.result > 0 ? this.result : -this.result;
+	if (negative) this.result = -this.result;
 }
 
-function parse(str, ...separators) {
+function parse(str, ...operators) {
 	let res = [];
 	for (let i = 0; i < str.length; i++) {
-		// for every separator in the string that is not
-		//wrapped between parenthesis
-		if (separators.some(sep => sep === str[i]) && !isWrapped(str, i)) {
-			//append the term before the separator to
-			//the result and remove it from the string
+		// for every operator in the string that is not
+		// wrapped between parenthesis that does not
+		// represent the number's sign
+		if (
+			operators.some(op => op === str[i]) &&
+			!isWrapped(str, i) &&
+			!isSign(str[i], str[i - 1])
+		) {
+			// append the term and the operator to the
+			// result and remove them from the string
 			res.push(str.slice(0, i));
 			res.push(str.substr(i, 1));
 			str = str.slice(i + 1);
@@ -109,13 +120,6 @@ function compute(a, b, operator) {
 	}
 }
 
-// function getOperators(str, parsedStr) {
-// 	res = [];
-// 	for (let i = 1; i < parsedStr.length; i++)
-// 		res.push(str[parsedStr.reduce((acc, substr) => {if()}, 0)]);
-// 	return res;
-// }
-
 // returns true if the index is wrapped between a pair of two matching parenthesis
 function isWrapped(str, index) {
 	for (let i = 0; i < index; i++)
@@ -153,5 +157,14 @@ function matchingBracket(bracket) {
 	}
 }
 
-const expression = new Expression('(4 * 9/9)^3-8*|2-4|^2');
+function isSign(curr, prev) {
+	return (
+		(curr === '-' || curr === '+') &&
+		(!prev || allOperators.some(op => op === prev))
+	);
+}
+
+const allOperators = ['+', '-', '*', '/', '%', '^'];
+
+const expression = new Expression('(4 * -(9*-1)/-9)^3-(8*(+2-4)+ 16)^2');
 console.log(`the result is ${expression.result}`);
