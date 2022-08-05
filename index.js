@@ -11,7 +11,6 @@
  * Power:                     *
  *      Primary               *
  *      Power "^" Primary     *
- * 			Power "√" Primary     *
  * Primary:                   *
  *      Number                *
  *      "(" Expression ")"    *
@@ -30,7 +29,7 @@ function Expression(expression) {
 
 	//make parsed an array of instances of Term() alternated with operators
 	const parsed = parse(expression, '+', '-').map(term =>
-		term === '+' || term === '-' ? term : new Term(term)
+		isOperator(term) ? term : new Term(term)
 	);
 	this.result = computeResult(parsed);
 }
@@ -38,7 +37,7 @@ function Expression(expression) {
 function Term(term) {
 	//make parsed an array of instances of Power() alternated with operators
 	const parsed = parse(term, '*', '/', '%').map(power =>
-		power === '*' || power === '/' || power === '%' ? power : new Power(power)
+		isOperator(power) ? power : new Power(power)
 	);
 	this.result = computeResult(parsed);
 }
@@ -46,7 +45,7 @@ function Term(term) {
 function Power(power) {
 	//make parsed an array of instances of Primary() alternated with operators
 	const parsed = parse(power, '^').map(primary =>
-		primary === '^' ? primary : new Primary(primary)
+		isOperator(primary) ? primary : new Primary(primary)
 	);
 	this.result = computeResult(parsed);
 }
@@ -144,6 +143,17 @@ function findMatchingBracket(str, bracket) {
 	}
 }
 
+// returns true if the + or - is the first character
+// of the string or if it is preceded by another operator
+function isSign(curr, prev) {
+	return (curr === '-' || curr === '+') && (!prev || isOperator(prev));
+}
+
+function isOperator(char) {
+	const operators = ['+', '-', '*', '/', '%', '^'];
+	return operators.some(op => op === char);
+}
+
 function matchingBracket(bracket) {
 	switch (bracket) {
 		case '(':
@@ -156,15 +166,6 @@ function matchingBracket(bracket) {
 			return '|';
 	}
 }
-
-function isSign(curr, prev) {
-	return (
-		(curr === '-' || curr === '+') &&
-		(!prev || allOperators.some(op => op === prev))
-	);
-}
-
-const allOperators = ['+', '-', '*', '/', '%', '^'];
 
 const expression = new Expression('(4 * -(9*-1)/-9)^3-(8*(+2-4)+ 16)^2');
 console.log(`the result is ${expression.result}`);
