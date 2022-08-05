@@ -25,35 +25,38 @@
  *****************************/
 
 function Expression(expression) {
+	//removes whitespace
 	expression = expression.replace(/\s/g, '');
-	this.expression = expression;
-	this.terms = parse(expression, '+', '-');
-	this.parsedTerms = this.terms.map(term => new Term(term));
-	console.log('EXPRESSION');
-	this.value = computeValue(expression, this.terms, this.parsedTerms);
+
+	//make parsed an array of instances of Term() alternated with operators
+	const parsed = parse(expression, '+', '-').map(term =>
+		term === '+' || term === '-' ? term : new Term(term)
+	);
+	this.result = computeResult(parsed);
 }
 
 function Term(term) {
-	this.term = term;
-	this.powers = parse(term, '*', '/', '%');
-	this.parsedPowers = this.powers.map(power => new Power(power));
-	console.log('TERM');
-	this.value = computeValue(term, this.powers, this.parsedPowers);
+	//make parsed an array of instances of Power() alternated with operators
+	const parsed = parse(term, '*', '/', '%').map(power =>
+		power === '*' || power === '/' || power === '%' ? power : new Power(power)
+	);
+	this.result = computeResult(parsed);
 }
 
 function Power(power) {
-	this.power = power;
-	this.primaries = parse(power, '^', '√');
-	this.parsedPrimaries = this.primaries.map(primary => new Primary(primary));
-	console.log('POWER');
-	this.value = computeValue(power, this.primaries, this.parsedPrimaries);
+	//make parsed an array of instances of Primary() alternated with operators
+	const parsed = parse(power, '^').map(primary =>
+		primary === '^' ? primary : new Primary(primary)
+	);
+	this.result = computeResult(parsed);
 }
 
 function Primary(primary) {
-	this.primary = primary;
-	this.value = isWrapped(primary, primary[1])
-		? new Expression(primary.slice(1, primary.length - 1)).value
-		: primary;
+	this.result = isWrapped(primary, primary[1])
+		? new Expression(primary.slice(1, primary.length - 1)).result
+		: +primary;
+	if (primary[0] === '|')
+		this.result = this.result > 0 ? this.result : -this.result;
 }
 
 function parse(str, ...separators) {
@@ -65,6 +68,7 @@ function parse(str, ...separators) {
 			//append the term before the separator to
 			//the result and remove it from the string
 			res.push(str.slice(0, i));
+			res.push(str.substr(i, 1));
 			str = str.slice(i + 1);
 			i = 0;
 		}
@@ -73,19 +77,17 @@ function parse(str, ...separators) {
 	return res;
 }
 
-function computeValue(str, parsedStr, members) {
-	let res = +members[0].value;
-	for (let i = 1; i < parsedStr.length; i++) {
+function computeResult(members) {
+	let res = members[0].result;
+	for (let i = 1; i < members.length - 1; i += 2) {
 		console.log(
-			`${res} ${str[str.indexOf(parsedStr[i]) - 1]} ${
-				members[i].value
-			} = ${compute(
+			`${res} ${members[i]} ${members[i + 1].result} = ${compute(
 				res,
-				+members[i].value,
-				str[str.indexOf(parsedStr[i]) - 1]
+				members[i + 1].result,
+				members[i]
 			)}`
 		);
-		res = compute(res, +members[i].value, str[str.indexOf(parsedStr[i]) - 1]);
+		res = compute(res, members[i + 1].result, members[i]);
 	}
 	return res;
 }
@@ -107,6 +109,13 @@ function compute(a, b, operator) {
 	}
 }
 
+// function getOperators(str, parsedStr) {
+// 	res = [];
+// 	for (let i = 1; i < parsedStr.length; i++)
+// 		res.push(str[parsedStr.reduce((acc, substr) => {if()}, 0)]);
+// 	return res;
+// }
+
 // returns true if the index is wrapped between a pair of two matching parenthesis
 function isWrapped(str, index) {
 	for (let i = 0; i < index; i++)
@@ -124,11 +133,10 @@ function isWrapped(str, index) {
 function findMatchingBracket(str, bracket) {
 	const matching = matchingBracket(str[bracket]);
 	for (let i = bracket + 1, similar = 0; i < str.length; i++) {
-		if (str[i] === str[bracket]) similar++;
-		else if (str[i] === matching) {
+		if (str[i] === matching) {
 			if (similar) similar--;
 			else return i;
-		}
+		} else if (str[i] === str[bracket]) similar++;
 	}
 }
 
@@ -145,7 +153,5 @@ function matchingBracket(bracket) {
 	}
 }
 
-const expression = new Expression('3 * 4 ^ 3 - (2 * 9 - 1)');
-console.log(`the result is ${expression.value}`);
-// console.table(expression);
-// expression.parsedTerms.forEach(term => console.table(term));
+const expression = new Expression('(4 * 9/9)^3-8*|2-4|^2');
+console.log(`the result is ${expression.result}`);
