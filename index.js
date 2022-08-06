@@ -1,3 +1,24 @@
+const screen = document.getElementById('screen-content');
+const digits = document.querySelectorAll('.digit');
+const operators = document.querySelectorAll('.basic-operator');
+
+digits.forEach(digit => {
+	digit.addEventListener('click', e => {
+		print(e.target.textContent);
+	});
+});
+
+operators.forEach(operator => {
+	operator.addEventListener('click', e => {
+		print(e.target.textContent);
+	});
+});
+
+function print(char) {
+	screen.textContent += char;
+	screen.scrollLeft = screen.scrollWidth;
+}
+
 /******************************
  * Expression:                *
  *      Term                  *
@@ -19,6 +40,7 @@
  *      "|" Expression "|"    *
  *      "-" Primary           *
  *      "+" Primary           *
+ * 			Primary "!"						*
  * Number:                    *
  *      Floating-point-literal*
  *****************************/
@@ -64,16 +86,17 @@ function Primary(primary) {
 		this.result = new Primary(primary.slice(1)).result;
 		if (primary[0] === '-') this.result = -this.result;
 	}
-	// Else calculate as normal, primaries wrapped inside parenthesis
-	// are to be calculated as expressions
-	else {
-		this.result = isWrapped(primary, 1)
-			? new Expression(primary.slice(1, primary.length - 1)).result
-			: +primary;
+	// Else if the primary is wrapped between parenthesis
+	// parse it as an expression
+	else if (isWrapped(primary, 1)) {
+		this.result = new Expression(primary.slice(1, primary.length - 1)).result;
 		// If the parenthesis the primary was wrapped between are
-		// absolute symbols return the absolute value
+		// modulus symbols return the absolute value
 		if (primary[0] === '|')
 			this.result = this.result > 0 ? this.result : -this.result;
+	} // Else the primary's value is equal to it's input
+	else {
+		this.result = +primary;
 	}
 }
 
@@ -185,5 +208,3 @@ function matchingBracket(bracket) {
 			return '|';
 	}
 }
-
-console.log(new Expression('---24 - 4!').result);
