@@ -2,6 +2,8 @@ const buttons = document.querySelectorAll(
 	'.digit, .basic-operator, #dot, .parenthesis, #factorial, #sign, #power, #radical, #absolute'
 );
 const equal = document.getElementById('equal');
+const clearBtn = document.getElementById('clear');
+const deleteBtn = document.getElementById('delete');
 
 buttons.forEach(btn => {
 	btn.addEventListener('click', e => {
@@ -10,6 +12,8 @@ buttons.forEach(btn => {
 });
 
 equal.addEventListener('click', operate);
+clearBtn.addEventListener('click', clear);
+deleteBtn.addEventListener('click', deleteChar);
 
 function print(char) {
 	const screen = document.getElementById('screen-content');
@@ -22,7 +26,20 @@ function operate() {
 	let expression = screen.textContent;
 	expression = expression.replace(/×/g, '*');
 	expression = expression.replace(/÷/g, '/');
-	screen.textContent = new Expression(expression).result;
+	screen.textContent = Number(new Expression(expression).result.toFixed(5));
+}
+
+function clear() {
+	const screen = document.getElementById('screen-content');
+	screen.textContent = '';
+}
+
+function deleteChar() {
+	const screen = document.getElementById('screen-content');
+	screen.textContent = screen.textContent.slice(
+		0,
+		screen.textContent.length - 1
+	);
 }
 
 /******************************
@@ -132,13 +149,13 @@ function parse(str, ...operators) {
 function computeResult(members) {
 	let res = members[0].result;
 	for (let i = 1; i < members.length - 1; i += 2) {
-		// console.log(
-		// 	`${res} ${members[i]} ${members[i + 1].result} = ${compute(
-		// 		res,
-		// 		members[i + 1].result,
-		// 		members[i]
-		// 	)}`
-		// );
+		console.log(
+			`${res} ${members[i]} ${members[i + 1].result} = ${compute(
+				res,
+				members[i + 1].result,
+				members[i]
+			)}`
+		);
 		res = compute(res, members[i + 1].result, members[i]);
 	}
 	return res;
@@ -197,7 +214,7 @@ function isOperator(char) {
 }
 
 function factorial(n) {
-	if (n < 0) return NaN;
+	if (n < 0 || n > 20) return NaN;
 	else if (n < 2) return 1;
 	else return factorial(n - 1) * n;
 }
