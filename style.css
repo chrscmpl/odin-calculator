@@ -71,17 +71,21 @@ body {
 	gap: 3%;
 }
 
+#basic-operations > #equal,
 #top-buttons > button {
-	background-color: blueviolet;
-	border: 5px solid black;
-	border-radius: 0;
-	flex: 1;
-	font-size: 70px;
 	color: white;
 	-webkit-text-stroke: 2px black;
+	background-color: blueviolet;
+	border: 5px solid black;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex: 1;
+}
+
+#top-buttons > button {
+	border-radius: 0;
+	font-size: 70px;
 }
 
 #middle-buttons {
@@ -91,7 +95,10 @@ body {
 	gap: 3%;
 }
 
-#middle-buttons > button {
+#middle-buttons > button,
+#basic-operations > button,
+#digits > #sign,
+#digits > #dot {
 	flex: 1;
 	color: pink;
 	background-color: rgb(44, 44, 44);
@@ -131,9 +138,7 @@ sup {
 	gap: 10px;
 }
 
-.digit,
-#sign,
-#dot {
+.digit {
 	flex: auto;
 	box-sizing: border-box;
 	background-color: pink;
@@ -142,17 +147,16 @@ sup {
 	width: 30%;
 	font-size: 70px;
 	display: flex;
-	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
 }
 
 #digits > #sign,
 #digits > #dot {
-	color: pink;
-	background-color: rgb(44, 44, 44);
-	border: 5px solid black;
-	-webkit-text-stroke: 2px black;
+	flex: auto;
+	height: 23%;
+	width: 30%;
+	font-size: 70px;
 }
 
 #basic-operations {
@@ -164,40 +168,21 @@ sup {
 	gap: 10px;
 }
 
-#basic-operations > button {
-	flex: 1;
-	color: pink;
-	background-color: rgb(44, 44, 44);
-	border: 5px solid black;
-	-webkit-text-stroke: 2px black;
-	font-size: 50px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-
-#basic-operations > #equal {
-	color: white;
-	-webkit-text-stroke: 2px black;
-	background-color: blueviolet;
-}
-
-#top-buttons > button:hover,
-#basic-operations > #equal:hover {
+#top-buttons > button:active,
+#basic-operations > #equal:active {
 	color: pink;
 	background-color: magenta;
 }
 
-#digits > #sign:hover,
-#digits > #dot:hover,
-#basic-operations > button:hover,
-#middle-buttons > button:hover {
+#digits > #sign:active,
+#digits > #dot:active,
+#basic-operations > button:active,
+#middle-buttons > button:active {
 	color: magenta;
 	background-color: rgb(26, 26, 26);
 }
 
-#digits > button:hover {
+#digits > button:active {
 	color: white;
 	-webkit-text-stroke: 2px black;
 	background-color: blueviolet;

@@ -1,22 +1,28 @@
-const screen = document.getElementById('screen-content');
-const digits = document.querySelectorAll('.digit');
-const operators = document.querySelectorAll('.basic-operator');
+const buttons = document.querySelectorAll(
+	'.digit, .basic-operator, #dot, .parenthesis, #factorial, #sign, #power, #radical, #absolute'
+);
+const equal = document.getElementById('equal');
 
-digits.forEach(digit => {
-	digit.addEventListener('click', e => {
+buttons.forEach(btn => {
+	btn.addEventListener('click', e => {
 		print(e.target.textContent);
 	});
 });
 
-operators.forEach(operator => {
-	operator.addEventListener('click', e => {
-		print(e.target.textContent);
-	});
-});
+equal.addEventListener('click', operate);
 
 function print(char) {
+	const screen = document.getElementById('screen-content');
 	screen.textContent += char;
 	screen.scrollLeft = screen.scrollWidth;
+}
+
+function operate() {
+	const screen = document.getElementById('screen-content');
+	let expression = screen.textContent;
+	expression = expression.replace(/×/g, '*');
+	expression = expression.replace(/÷/g, '/');
+	screen.textContent = new Expression(expression).result;
 }
 
 /******************************
