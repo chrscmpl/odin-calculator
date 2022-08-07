@@ -5,50 +5,55 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="./style.css" />
-		<script src="./index.js" defer></script>
+		<script src="./js/expression.js" defer></script>
+		<script src="./js/calculator.js" defer></script>
+		<script src="./js/index.js" defer></script>
 		<title>Calculator</title>
 	</head>
 	<body>
 		<div id="homepage">
 			<div id="calculator">
-				<div id="screen"><div id="screen-content"></div></div>
+				<div id="screen">
+					<div id="screen-top"></div>
+					<div id="screen-bottom"></div>
+				</div>
 				<div id="buttons">
 					<div id="top-buttons">
 						<button id="clear">C</button>
 						<button id="delete">⌦</button>
 					</div>
 					<div id="middle-buttons">
-						<button class="parenthesis">(</button>
-						<button class="parenthesis">)</button>
-						<button id="power">
+						<button class="parenthesis" value="(">(</button>
+						<button class="parenthesis" value=")">)</button>
+						<button id="power" value="^?">
 							<div>x<sup>y</sup></div>
 						</button>
-						<button id="radical">
+						<button id="radical" value="^(1/?)">
 							<div><sup>y</sup>√x</div>
 						</button>
-						<button id="absolute">|x|</button>
-						<button id="factorial">!</button>
+						<button id="absolute" value="|">|x|</button>
+						<button id="factorial" value="!">!</button>
 					</div>
 					<div id="lower-buttons">
 						<div id="digits">
-							<button class="digit">1</button>
-							<button class="digit">2</button>
-							<button class="digit">3</button>
-							<button class="digit">4</button>
-							<button class="digit">5</button>
-							<button class="digit">6</button>
-							<button class="digit">7</button>
-							<button class="digit">8</button>
-							<button class="digit">9</button>
-							<button id="sign">+/-</button>
-							<button class="digit">0</button>
-							<button id="dot">.</button>
+							<button class="digit" value="1">1</button>
+							<button class="digit" value="2">2</button>
+							<button class="digit" value="3">3</button>
+							<button class="digit" value="4">4</button>
+							<button class="digit" value="5">5</button>
+							<button class="digit" value="6">6</button>
+							<button class="digit" value="7">7</button>
+							<button class="digit" value="8">8</button>
+							<button class="digit" value="9">9</button>
+							<button id="sign" value="-">+/-</button>
+							<button class="digit" value="0">0</button>
+							<button id="dot" value=".">.</button>
 						</div>
 						<div id="basic-operations">
-							<button class="basic-operator">÷</button>
-							<button class="basic-operator">+</button>
-							<button class="basic-operator">×</button>
-							<button class="basic-operator">-</button>
+							<button class="operator" value="/">÷</button>
+							<button class="operator" value="*">×</button>
+							<button class="operator" value="-">-</button>
+							<button class="operator" value="+">+</button>
 							<button id="equal">=</button>
 						</div>
 					</div>

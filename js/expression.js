@@ -1,47 +1,3 @@
-const buttons = document.querySelectorAll(
-	'.digit, .basic-operator, #dot, .parenthesis, #factorial, #sign, #power, #radical, #absolute'
-);
-const equal = document.getElementById('equal');
-const clearBtn = document.getElementById('clear');
-const deleteBtn = document.getElementById('delete');
-
-buttons.forEach(btn => {
-	btn.addEventListener('click', e => {
-		print(e.target.textContent);
-	});
-});
-
-equal.addEventListener('click', operate);
-clearBtn.addEventListener('click', clear);
-deleteBtn.addEventListener('click', deleteChar);
-
-function print(char) {
-	const screen = document.getElementById('screen-content');
-	screen.textContent += char;
-	screen.scrollLeft = screen.scrollWidth;
-}
-
-function operate() {
-	const screen = document.getElementById('screen-content');
-	let expression = screen.textContent;
-	expression = expression.replace(/×/g, '*');
-	expression = expression.replace(/÷/g, '/');
-	screen.textContent = Number(new Expression(expression).result.toFixed(5));
-}
-
-function clear() {
-	const screen = document.getElementById('screen-content');
-	screen.textContent = '';
-}
-
-function deleteChar() {
-	const screen = document.getElementById('screen-content');
-	screen.textContent = screen.textContent.slice(
-		0,
-		screen.textContent.length - 1
-	);
-}
-
 /******************************
  * Expression:                *
  *      Term                  *
@@ -69,9 +25,6 @@ function deleteChar() {
  *****************************/
 
 function Expression(expression) {
-	//removes whitespace
-	expression = expression.replace(/\s/g, '');
-
 	//make parsed an array of instances of Term() alternated with operators
 	const parsed = parse(expression, '+', '-').map(term =>
 		isOperator(term) ? term : new Term(term)
@@ -117,7 +70,8 @@ function Primary(primary) {
 		// modulus symbols return the absolute value
 		if (primary[0] === '|')
 			this.result = this.result > 0 ? this.result : -this.result;
-	} // Else the primary's value is equal to it's input
+	}
+	// Else the primary's value is equal to it's input
 	else {
 		this.result = +primary;
 	}
@@ -149,13 +103,13 @@ function parse(str, ...operators) {
 function computeResult(members) {
 	let res = members[0].result;
 	for (let i = 1; i < members.length - 1; i += 2) {
-		console.log(
-			`${res} ${members[i]} ${members[i + 1].result} = ${compute(
-				res,
-				members[i + 1].result,
-				members[i]
-			)}`
-		);
+		// console.log(
+		// 	`${res} ${members[i]} ${members[i + 1].result} = ${compute(
+		// 		res,
+		// 		members[i + 1].result,
+		// 		members[i]
+		// 	)}`
+		// );
 		res = compute(res, members[i + 1].result, members[i]);
 	}
 	return res;
@@ -230,4 +184,8 @@ function matchingBracket(bracket) {
 		case '|':
 			return '|';
 	}
+}
+
+function isValid(expression) {
+	return expression !== '' && !isNaN(new Expression(expression).result);
 }
