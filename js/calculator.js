@@ -206,6 +206,7 @@ function MulAroundBrackets(str) {
 		if (
 			isClosingBracket(str[i]) &&
 			!isOperator(str[i + 1]) &&
+			str[i + 1] !== '!' &&
 			!isClosingBracket(str[i + 1]) &&
 			i < str.length - 1
 		) {
