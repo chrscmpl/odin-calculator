@@ -112,22 +112,31 @@ body {
 	background-color: rgb(44, 44, 44);
 	border: 5px solid black;
 	-webkit-text-stroke: 2px black;
-	font-size: 50px;
+	font-size: 40px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
+#middle-buttons sup {
+	font-size: 20px;
+	margin: -2px;
+}
+
+#middle-buttons sup,
+#radical-sign {
+	-webkit-text-stroke: 1px black;
+}
+
 #basic-operations > button {
 	flex: 1 1 0;
-	font-size: 40px;
 	padding: 0%;
 }
 
-#middle-buttons > #power,
+/* #middle-buttons > #power,
 #middle-buttons > #radical {
 	-webkit-text-stroke: 1px black;
-}
+} */
 
 #lower-buttons {
 	height: 60%;

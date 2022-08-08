@@ -47,6 +47,7 @@ function Calculator(screenBottom, screenTop) {
 		if (this.showingResult || this.primary.length === 0) return;
 		this.primary = addMissingBrackets(this.primary);
 		this.expression += this.primary;
+		this.expression = MulAroundBrackets(this.expression);
 		this.primary = '';
 		this.primary = String(
 			Number(new Expression(this.expression).result.toFixed(5))
@@ -79,7 +80,11 @@ function Calculator(screenBottom, screenTop) {
 	this.clearAfterResult = function (char) {
 		if (this.showingResult) this.expression = '';
 		if (
-			((!isOperator(char) && !isPower(char) && char !== '!' && char !== 's') ||
+			((!isOperator(char) &&
+				!isPower(char) &&
+				!isOpeningBracket(char) &&
+				char !== '!' &&
+				char !== 's') ||
 				this.primary === 'Infinity' ||
 				this.primary === 'NaN') &&
 			this.showingResult
@@ -169,4 +174,42 @@ function isValidCharacter(str) {
 			return true;
 	}
 	return !isNaN(str) || isOperator(str);
+}
+
+//adds multiplication signs around opening brackets preceded by numbers or
+//closing brackets followed by numbers
+function MulAroundBrackets(str) {
+	for (let i = 0; i < str.length; i++) {
+		if (
+			isOpeningBracket(str[i]) &&
+			!isOperator(str[i - 1]) &&
+			!isOpeningBracket(str[i - 1]) &&
+			i
+		) {
+			str = str.split('');
+			str.splice(i, 0, '*');
+			str = str.join('');
+		}
+		if (
+			isClosingBracket(str[i]) &&
+			!isOperator(str[i + 1]) &&
+			!isClosingBracket(str[i + 1]) &&
+			i < str.length - 1
+		) {
+			str = str.split('');
+			str.splice(i + 1, 0, '*');
+			str = str.join('');
+		}
+	}
+	return str;
+}
+
+function isOpeningBracket(char) {
+	const brackets = ['(', '[', '{'];
+	return brackets.some(bracket => bracket === char);
+}
+
+function isClosingBracket(char) {
+	const brackets = [')', ']', '}'];
+	return brackets.some(bracket => bracket === char);
 }

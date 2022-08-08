@@ -4,7 +4,7 @@ const calculator = new Calculator(
 );
 
 const buttons = document.querySelectorAll(
-	'.digit, .operator, #dot, .parenthesis, #factorial, #sign, #power, #radical, #absolute'
+	'.digit, .operator, #dot, .parenthesis, #factorial, #sign, #power, #radical, #absolute, #modulus'
 );
 const equalBtn = document.getElementById('equal');
 const clearBtn = document.getElementById('clear');
