@@ -11,7 +11,7 @@ function Calculator(screenBottom, screenTop) {
 	//otherwise adds the input to this.primary
 	this.input = function (char) {
 		this.clearAfterResult(char);
-		if (isOperator(char) && !isPower(char) && isValid(this.primary)) {
+		if (isOperator(char) && !isPower(char) && isValidExpression(this.primary)) {
 			this.expression += this.primary + char;
 			this.primary = '';
 		} else this.primary += char;
@@ -41,7 +41,7 @@ function Calculator(screenBottom, screenTop) {
 	// and makes a new Number from it to remove unnecessary zeroes, and then makes
 	// it a string to make sure this.primary retains its methods
 	this.operate = function () {
-		if (this.showingResult) return;
+		if (this.showingResult || this.primary.length === 0) return;
 		this.primary = addMissingBrackets(this.primary);
 		this.expression += this.primary;
 		this.primary = '';
@@ -106,4 +106,20 @@ function addMissingBrackets(primary) {
 		}
 	}
 	return primary;
+}
+
+function isValidCharacter(str) {
+	switch (str) {
+		case '!':
+		case '(':
+		case ')':
+		case '[':
+		case ']':
+		case '{':
+		case '}':
+		case '|':
+		case '.':
+			return true;
+	}
+	return !isNaN(str) || isOperator(str);
 }

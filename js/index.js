@@ -22,3 +22,10 @@ buttons.forEach(btn => {
 equalBtn.addEventListener('click', () => calculator.operate());
 clearBtn.addEventListener('click', () => calculator.clear());
 deleteBtn.addEventListener('click', () => calculator.deleteChar());
+
+window.addEventListener('keydown', e => {
+	if (isValidCharacter(e.key)) calculator.input(e.key);
+	else if (e.key === 'Backspace') calculator.deleteChar();
+	else if (e.key === 'Enter' || e.key === '=') calculator.operate();
+	else if (e.key === 'Delete') calculator.clear();
+});

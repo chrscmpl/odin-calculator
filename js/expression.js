@@ -49,10 +49,11 @@ function Power(power) {
 }
 
 function Primary(primary) {
+	if (primary.length === 0) this.result === NaN;
 	// If the primary is followed by a factorial symbol
 	// calculate the result as normal and calculate the
 	// factorial from that after
-	if (primary[primary.length - 1] === '!') {
+	else if (primary[primary.length - 1] === '!') {
 		this.result = new Primary(primary.slice(0, primary.length - 1)).result;
 		this.result = factorial(this.result);
 	}
@@ -186,6 +187,6 @@ function matchingBracket(bracket) {
 	}
 }
 
-function isValid(expression) {
+function isValidExpression(expression) {
 	return expression !== '' && !isNaN(new Expression(expression).result);
 }
