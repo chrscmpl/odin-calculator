@@ -169,7 +169,8 @@ function isOperator(char) {
 }
 
 function factorial(n) {
-	if (n < 0 || n > 20 || !n) return NaN;
+	if (n < 0 || n === undefined) return NaN;
+	else if (n > 20) return Infinity;
 	else if (n < 2) return 1;
 	else return factorial(n - 1) * n;
 }

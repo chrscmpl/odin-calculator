@@ -129,6 +129,15 @@ function Calculator(screenBottom, screenTop) {
 		this.primary = this.primary.join('');
 		if (!wrapped) this.primary += ')';
 	};
+
+	this.back = function () {
+		if (!this.showingResult) return;
+		this.expression = this.expression.slice(0, this.expression.length - 1);
+		this.primary = this.expression;
+		this.expression = '';
+		this.showingResult = false;
+		this.update();
+	};
 }
 
 // replaces characters used internally by the calculator with
@@ -149,10 +158,14 @@ function isPower(str) {
 function addMissingBrackets(primary) {
 	for (let i = primary.length - 1; i >= 0; i--) {
 		if (
-			primary[i] === '(' &&
-			(primary.match(/\(/g) || []).length > (primary.match(/\)/g) || []).length
+			isOpeningBracket(primary[i]) &&
+			(primary.match(new RegExp(`\\${primary[i]}`, 'g')) || []).length >
+				(
+					primary.match(new RegExp(`\\${matchingBracket(primary[i])}`, 'g')) ||
+					[]
+				).length
 		) {
-			primary += ')';
+			primary += matchingBracket(primary[i]);
 		} else if (primary[i] === '|' && (primary.match(/\|/g) || []).length % 2) {
 			primary += '|';
 		}

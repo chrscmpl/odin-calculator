@@ -30,6 +30,7 @@ window.addEventListener('keydown', e => {
 	else if (e.key === 'Backspace') calculator.deleteChar();
 	else if (e.key === '=') calculator.operate();
 	else if (e.key === 'Delete') calculator.clear();
+	else if (e.key === 'ArrowUp') calculator.back();
 	//alternative for multiplication for non programmers
 	else if (e.key === 'x' || e.key === 'X') calculator.input('*');
 });
