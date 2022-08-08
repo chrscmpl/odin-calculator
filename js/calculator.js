@@ -4,16 +4,26 @@ function Calculator(screenBottom, screenTop) {
 
 	this.primary = '';
 	this.expression = [''];
+	this.showingResult = false;
 
 	//adds the input plus this.primary to this.expression if
 	//the input is an operator, and this.primary is a valid expression
 	//otherwise adds the input to this.primary
 	//calls this.update()
-	this.input = function (str) {
-		if (this.isSeparator(str) && isValid(this.primary)) {
-			this.insert(this.primary + str);
-			this.primary = str.includes('?') ? '(' : '';
-		} else this.primary += str;
+	//calls this.clear() if a number is inputted after calculating an expression
+	this.input = function (char) {
+		if (this.showingResult) this.expression = [''];
+		if (!this.isSeparator(char) && this.showingResult) this.clear();
+		if (
+			(this.isSeparator(char) && isValid(this.primary)) ||
+			(char === ')' &&
+				this.expression[this.expression.length - 1].includes('?') &&
+				isValid(this.primary + char))
+		) {
+			this.insert(this.primary + char);
+			this.primary = char.includes('?') ? '(' : '';
+		} else this.primary += char;
+		this.showingResult = false;
 		this.update();
 	};
 
@@ -21,7 +31,7 @@ function Calculator(screenBottom, screenTop) {
 	// primary to this.expression, and if it doesn't contain another ?
 	// it calls this.merge()
 	// if this.expression's last element does not have a ? in it, it
-	// appends primary to that instead
+	// appends primary to that instead (should always be index 0)
 	this.insert = function (primary) {
 		if (this.expression[this.expression.length - 1].includes('?')) {
 			this.expression.push(primary);
@@ -52,6 +62,7 @@ function Calculator(screenBottom, screenTop) {
 	// replaces characters used internally by the calculator with
 	// the ones to be displayed on the screen
 	this.toReadable = function (str) {
+		str = String(str);
 		str = str.replace(/\*/g, '×');
 		str = str.replace(/\//g, '÷');
 		return str;
@@ -62,6 +73,45 @@ function Calculator(screenBottom, screenTop) {
 	this.isSeparator = function (str) {
 		const separators = ['+', '-', '*', '/', '%', '^?', '^(1/?)'];
 		return separators.some(separator => separator === str);
+	};
+
+	// clears the screen and resets every property to starting value
+	this.clear = function () {
+		this.screenBottom.textContent = '';
+		this.screenTop.textContent = '';
+
+		const temp = new Calculator(screenBottom, screenTop);
+		for (key in this) {
+			this[key] = temp[key];
+		}
+	};
+
+	// inserts whatever is left in the bottom screen to the top and calculates
+	// the expression from this.expression[0], fixes the result to 5 decimal points,
+	// and makes a new Number from it to remove unnecessary zeroes, and puts the
+	//result in the bottom screen;
+	this.operate = function () {
+		this.primary = this.addMissingBrackets(this.primary);
+		this.insert(this.primary);
+		this.primary = Number(new Expression(this.expression[0]).result.toFixed(5));
+		this.expression[0] += '=';
+		this.showingResult = true;
+		this.update();
+	};
+
+	// deletes the last number or operator inserted in the bottom screen
+	this.deleteChar = function () {
+		this.primary = this.primary.slice(0, this.primary.length - 1);
+		this.update();
+	};
+
+	// adds any missing closing brackets to the end of the primary
+	this.addMissingBrackets = function (primary) {
+		while (
+			(primary.match(/\(/g) || []).length > (primary.match(/\)/g) || []).length
+		)
+			primary += ')';
+		return primary;
 	};
 
 	// this.print = function (char) {
@@ -93,41 +143,6 @@ function Calculator(screenBottom, screenTop) {
 	// 		this.screenTop.textContent += this.screenBottom.textContent;
 	// 		this.screenBottom.textContent = '';
 	// 	}
-	// };
-
-	// // prints the rest of the contents of the bottom screen to the top,
-	// // calculates an expression from the content of the top screen after
-	// // calling toUsable to replace invalid characters, takes the result
-	// // and fixes it to 5 decimal points, and makes a new Number from it to
-	// // remove unnecessary zeroes, and puts the result in the bottom screen;
-	// this.operate = function () {
-	// 	this.printToTop();
-	// 	this.printToBottom(
-	// 		Number(
-	// 			new Expression(
-	// 				this.toUsable(this.screenTop.textContent)
-	// 			).result.toFixed(5)
-	// 		)
-	// 	);
-	// };
-
-	// // clears the screen and resets every property to starting value
-	// this.clear = function () {
-	// 	this.screenBottom.textContent = '';
-	// 	this.screenTop.textContent = '';
-
-	// 	const temp = new Calculator(screenBottom, screenTop);
-	// 	for (key in this) {
-	// 		this[key] = temp[key];
-	// 	}
-	// };
-
-	// // deletes the last number or operator inserted in the bottom screen
-	// this.deleteChar = function () {
-	// 	this.screenBottom.textContent = this.screenBottom.textContent.slice(
-	// 		0,
-	// 		this.screenBottom.textContent.length - 1
-	// 	);
 	// };
 
 	// // regex :c
