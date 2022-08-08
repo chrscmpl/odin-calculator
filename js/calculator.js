@@ -14,7 +14,8 @@ function Calculator(screenBottom, screenTop) {
 		if (isOperator(char) && !isPower(char) && isValidExpression(this.primary)) {
 			this.expression += this.primary + char;
 			this.primary = '';
-		} else this.primary += char;
+		} else if (char === 's') this.changeSign();
+		else this.primary += char;
 		this.showingResult = false;
 		this.update();
 	};
@@ -74,9 +75,48 @@ function Calculator(screenBottom, screenTop) {
 			!isOperator(char) &&
 			!isPower(char) &&
 			char !== '!' &&
+			char !== 's' &&
 			this.showingResult
 		)
 			this.clear();
+	};
+
+	// looks for the rightmost valid expression in this.primary
+	// and invokes insertSign at it's starting index
+	this.changeSign = function () {
+		if (!this.primary.length) return;
+		for (let i = this.primary.length - 1; i > 0; i--) {
+			if (isValidExpression(this.primary.slice(i))) {
+				for (let j = i - 1; j > 0; j--) {
+					if (
+						!isValidExpression(this.primary.slice(j)) ||
+						this.primary[j + 1] === '+' ||
+						this.primary[j + 1] === '-'
+					) {
+						this.insertSign(j + 1);
+						return;
+					}
+				}
+			}
+		}
+		this.insertSign(0);
+	};
+
+	// inserts a sign or replaces it with its complement at a certain index of
+	// this.primary and adds parenthesis after the sign and at the end if there aren't
+	this.insertSign = function (index) {
+		const isSign = this.primary[index] === '-' || this.primary[index] === '+';
+		const wrapped =
+			this.primary[index ? index + 1 : isSign ? index + 1 : index] === '(' ||
+			this.primary[index ? index + 1 : isSign ? index + 1 : index] === '|';
+		this.primary = this.primary.split('');
+		this.primary.splice(
+			index,
+			isSign ? 1 : 0,
+			`${this.primary[index] === '-' ? '+' : '-'}${wrapped ? '' : '('}`
+		);
+		this.primary = this.primary.join('');
+		if (!wrapped) this.primary += ')';
 	};
 }
 
