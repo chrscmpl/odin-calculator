@@ -24,6 +24,8 @@ function Calculator(screenBottom, screenTop) {
 	this.update = function () {
 		this.screenBottom.textContent = toReadable(this.primary);
 		this.screenTop.innerHTML = toReadable(this.expression);
+		this.screenBottom.scrollLeft = this.screenBottom.scrollWidth;
+		this.screenTop.scrollLeft = this.screenBottom.scrollWidth;
 	};
 
 	// clears the screen and resets every property to starting value
@@ -49,6 +51,10 @@ function Calculator(screenBottom, screenTop) {
 		this.primary = String(
 			Number(new Expression(this.expression).result.toFixed(5))
 		);
+		if (this.primary.length > 15)
+			this.primary = new Number(this.primary)
+				.toExponential(8)
+				.replace(/e/g, '*10^');
 		this.expression += '=';
 		this.showingResult = true;
 		this.update();
@@ -68,14 +74,14 @@ function Calculator(screenBottom, screenTop) {
 	};
 
 	//calls this.clear() if a number is inputted after calculating an expression
+	//or either way if the expression generated infinity or NaN
 	//and clears this.expression either way if called after calculating the expression.
 	this.clearAfterResult = function (char) {
 		if (this.showingResult) this.expression = '';
 		if (
-			!isOperator(char) &&
-			!isPower(char) &&
-			char !== '!' &&
-			char !== 's' &&
+			((!isOperator(char) && !isPower(char) && char !== '!' && char !== 's') ||
+				this.primary === 'Infinity' ||
+				this.primary === 'NaN') &&
 			this.showingResult
 		)
 			this.clear();
@@ -124,6 +130,7 @@ function Calculator(screenBottom, screenTop) {
 // the ones to be displayed on the screen
 function toReadable(str) {
 	str = String(str);
+	str = str.replace(/\*10\^/g, 'e');
 	str = str.replace(/\*/g, '×');
 	str = str.replace(/\//g, '÷');
 	return str;

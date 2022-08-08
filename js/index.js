@@ -28,7 +28,7 @@ deleteBtn.addEventListener('click', () => calculator.deleteChar());
 window.addEventListener('keydown', e => {
 	if (isValidCharacter(e.key)) calculator.input(e.key);
 	else if (e.key === 'Backspace') calculator.deleteChar();
-	else if (e.key === 'Enter' || e.key === '=') calculator.operate();
+	else if (e.key === '=') calculator.operate();
 	else if (e.key === 'Delete') calculator.clear();
 	//alternative for multiplication for non programmers
 	else if (e.key === 'x' || e.key === 'X') calculator.input('*');
