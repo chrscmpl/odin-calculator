@@ -224,6 +224,14 @@ body {
 		font-size: 20px;
 		-webkit-text-stroke: 1px black;
 	}
+	#middle-buttons{
+		flex-wrap: wrap;
+		justify-content: space-around;
+	}
+	#middle-buttons > button{
+		flex: auto;
+		width: 20%;
+	}
 	#screen-top {
 		font-size: 30px;
 	}
@@ -236,4 +244,9 @@ body {
 	#middle-buttons sup {
 		font-size: 15px;
 	}
+	.digit,
+	#digits > #sign,
+#digits > #dot {
+	font-size: 30px;
+	width: 25%;
 }
