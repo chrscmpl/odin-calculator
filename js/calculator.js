@@ -3,76 +3,26 @@ function Calculator(screenBottom, screenTop) {
 	this.screenTop = screenTop;
 
 	this.primary = '';
-	this.expression = [''];
+	this.expression = '';
 	this.showingResult = false;
 
-	//adds the input plus this.primary to this.expression if
+	//Adds the input plus this.primary to this.expression if
 	//the input is an operator, and this.primary is a valid expression
 	//otherwise adds the input to this.primary
-	//calls this.update()
-	//calls this.clear() if a number is inputted after calculating an expression
 	this.input = function (char) {
-		if (this.showingResult) this.expression = [''];
-		if (!this.isSeparator(char) && this.showingResult) this.clear();
-		if (
-			(this.isSeparator(char) && isValid(this.primary)) ||
-			(char === ')' &&
-				this.expression[this.expression.length - 1].includes('?') &&
-				isValid(this.primary + char))
-		) {
-			this.insert(this.primary + char);
-			this.primary = char.includes('?') ? '(' : '';
+		this.clearAfterResult(char);
+		if (isOperator(char) && !isPower(char) && isValid(this.primary)) {
+			this.expression += this.primary + char;
+			this.primary = '';
 		} else this.primary += char;
 		this.showingResult = false;
 		this.update();
 	};
 
-	// if this.expression's last element has a ? in it, it appends the
-	// primary to this.expression, and if it doesn't contain another ?
-	// it calls this.merge()
-	// if this.expression's last element does not have a ? in it, it
-	// appends primary to that instead (should always be index 0)
-	this.insert = function (primary) {
-		if (this.expression[this.expression.length - 1].includes('?')) {
-			this.expression.push(primary);
-			if (!primary.includes('?')) this.expression = this.merge(this.expression);
-		} else this.expression[this.expression.length - 1] += primary;
-	};
-
-	// starting from top to bottom, it tries to replace the ?s in this.expression's
-	// elements with the next element, until it reaches the 0 index or it finds a non
-	// valid expression (after the first one is not valid everyone after it should
-	// contain a ? making it non valid)
-	this.merge = function (expression) {
-		for (let i = expression.length - 1; i > 0; i--) {
-			if (isValid(expression[i])) {
-				expression[i - 1] = expression[i - 1].replace('?', expression[i]);
-				expression.pop();
-			}
-		}
-		return expression;
-	};
-
 	//updates the screen
 	this.update = function () {
-		this.screenBottom.textContent = this.toReadable(this.primary);
-		this.screenTop.innerHTML = this.toReadable(this.expression[0]);
-	};
-
-	// replaces characters used internally by the calculator with
-	// the ones to be displayed on the screen
-	this.toReadable = function (str) {
-		str = String(str);
-		str = str.replace(/\*/g, '×');
-		str = str.replace(/\//g, '÷');
-		return str;
-	};
-
-	// returns true if this.primary should be added to this.expression
-	// after inserting them
-	this.isSeparator = function (str) {
-		const separators = ['+', '-', '*', '/', '%', '^?', '^(1/?)'];
-		return separators.some(separator => separator === str);
+		this.screenBottom.textContent = toReadable(this.primary);
+		this.screenTop.innerHTML = toReadable(this.expression);
 	};
 
 	// clears the screen and resets every property to starting value
@@ -87,69 +37,73 @@ function Calculator(screenBottom, screenTop) {
 	};
 
 	// inserts whatever is left in the bottom screen to the top and calculates
-	// the expression from this.expression[0], fixes the result to 5 decimal points,
-	// and makes a new Number from it to remove unnecessary zeroes, and puts the
-	//result in the bottom screen;
+	// the expression from this.expression, fixes the result to 5 decimal points,
+	// and makes a new Number from it to remove unnecessary zeroes, and then makes
+	// it a string to make sure this.primary retains its methods
 	this.operate = function () {
-		this.primary = this.addMissingBrackets(this.primary);
-		this.insert(this.primary);
-		this.primary = Number(new Expression(this.expression[0]).result.toFixed(5));
-		this.expression[0] += '=';
+		if (this.showingResult) return;
+		this.primary = addMissingBrackets(this.primary);
+		this.expression += this.primary;
+		this.primary = '';
+		this.primary = String(
+			Number(new Expression(this.expression).result.toFixed(5))
+		);
+		this.expression += '=';
 		this.showingResult = true;
 		this.update();
 	};
 
-	// deletes the last number or operator inserted in the bottom screen
+	// deletes the last number or operator in this.primary,
+	// if this.primary is empty reverses this.expression in
+	// this.primary
 	this.deleteChar = function () {
+		if (this.showingResult) this.clear();
+		else if (this.primary.length === 0) {
+			this.primary = this.expression;
+			this.expression = '';
+		}
 		this.primary = this.primary.slice(0, this.primary.length - 1);
 		this.update();
 	};
 
-	// adds any missing closing brackets to the end of the primary
-	this.addMissingBrackets = function (primary) {
-		while (
-			(primary.match(/\(/g) || []).length > (primary.match(/\)/g) || []).length
+	//calls this.clear() if a number is inputted after calculating an expression
+	//and clears this.expression either way if called after calculating the expression.
+	this.clearAfterResult = function (char) {
+		if (this.showingResult) this.expression = '';
+		if (
+			!isOperator(char) &&
+			!isPower(char) &&
+			char !== '!' &&
+			this.showingResult
 		)
-			primary += ')';
-		return primary;
+			this.clear();
 	};
+}
 
-	// this.print = function (char) {
-	// 	this.printToBottom(char);
-	// 	this.printToTop(char);
-	// };
+// replaces characters used internally by the calculator with
+// the ones to be displayed on the screen
+function toReadable(str) {
+	str = String(str);
+	str = str.replace(/\*/g, '×');
+	str = str.replace(/\//g, '÷');
+	return str;
+}
 
-	// this.printToBottom = function (str) {
-	// 	this.screenBottom.textContent += str;
-	// 	this.screenBottom.scrollLeft = this.screenBottom.scrollWidth;
-	// };
+function isPower(str) {
+	return str === '^' || str === '^(1/';
+}
 
-	// //updates the top screen with the content of the bottom screen if
-	// //the function was called without arguments or the argument is an
-	// //operator and the content of the bottom screen is a valid expression
-	// this.printToTop = function (char) {
-	// 	if (
-	// 		char === undefined ||
-	// 		(isOperator(this.toUsable(char)) &&
-	// 			!isNaN(
-	// 				new Expression(
-	// 					this.screenBottom.textContent.slice(
-	// 						0,
-	// 						this.screenBottom.textContent.length - 1
-	// 					)
-	// 				).result
-	// 			))
-	// 	) {
-	// 		this.screenTop.textContent += this.screenBottom.textContent;
-	// 		this.screenBottom.textContent = '';
-	// 	}
-	// };
-
-	// // regex :c
-	// this.toUsable = function (expression) {
-	// 	expression = expression.replace(/\s/g, '');
-	// 	expression = expression.replace(/×/g, '*');
-	// 	expression = expression.replace(/÷/g, '/');
-	// 	return expression;
-	// };
+// adds any missing closing brackets to the end of the primary
+function addMissingBrackets(primary) {
+	for (let i = primary.length - 1; i >= 0; i--) {
+		if (
+			primary[i] === '(' &&
+			(primary.match(/\(/g) || []).length > (primary.match(/\)/g) || []).length
+		) {
+			primary += ')';
+		} else if (primary[i] === '|' && (primary.match(/\|/g) || []).length % 2) {
+			primary += '|';
+		}
+	}
+	return primary;
 }
